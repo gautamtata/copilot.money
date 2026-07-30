@@ -53,8 +53,18 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
+def include_name(name, type_, parent_names):
+    # Better Auth owns its own tables (user, session, account, ...) in the same
+    # database; only manage tables that our SQLAlchemy models define.
+    if type_ == "table":
+        return name in target_metadata.tables
+    return True
+
+
 def do_run_migrations(connection: Connection) -> None:
-    context.configure(connection=connection, target_metadata=target_metadata)
+    context.configure(
+        connection=connection, target_metadata=target_metadata, include_name=include_name
+    )
 
     with context.begin_transaction():
         context.run_migrations()
