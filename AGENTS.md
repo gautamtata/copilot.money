@@ -15,6 +15,8 @@ Railway project `copilot-money`, two services deployed from this repo via GitHub
 - `backend` — FastAPI via `uvicorn main:app` (config in `backend/railway.json`), routes under `/api/backend/*`, health check at `/api/backend/health`.
 - `frontend` — Next.js.
 
+Local dev needs both processes: `uv run uvicorn main:app --port 8000 --reload` in `backend/` (env from root `.env`) and `npm run dev` in `frontend/` — the frontend proxy targets `localhost:8000` locally via `BACKEND_INTERNAL_URL` in `frontend/.env.local`.
+
 The frontend talks to the backend only through its Next.js proxy route over Railway's private network (`http://backend.railway.internal`) with a shared `BACKEND_API_TOKEN` bearer secret; the browser never calls FastAPI directly. The backend's public domain exposes only the health check and Plaid webhooks. `railway up` from `backend/` or `frontend/` deploys that service directly; pushing to `main` deploys both.
 
 ## Engineering principles
