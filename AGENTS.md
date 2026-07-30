@@ -8,6 +8,15 @@ Personal finance management app. Users connect bank accounts via Plaid; the app 
 - `backend/` — Python 3.13, FastAPI + uvicorn, managed with `uv` (run things with `uv run`, add deps with `uv add`).
 - Database: Postgres (async access via `asyncpg`).
 
+## Deployment
+
+Railway project `copilot-money`, two services deployed from this repo via GitHub CI/CD:
+
+- `backend` — FastAPI via `uvicorn main:app` (config in `backend/railway.json`), routes under `/api/backend/*`, health check at `/api/backend/health`.
+- `frontend` — Next.js.
+
+The frontend talks to the backend only through its Next.js proxy route over Railway's private network (`http://backend.railway.internal`) with a shared `BACKEND_API_TOKEN` bearer secret; the browser never calls FastAPI directly. The backend's public domain exposes only the health check and Plaid webhooks. `railway up` from `backend/` or `frontend/` deploys that service directly; pushing to `main` deploys both.
+
 ## Engineering principles
 
 These apply to all code in this repo, human- or AI-written.
