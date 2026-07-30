@@ -4,7 +4,7 @@
 export function Sparkline({
   values,
   height = 48,
-  stroke = "#22c55e",
+  stroke = "#175a43",
 }: {
   values: number[];
   height?: number;
@@ -12,7 +12,7 @@ export function Sparkline({
 }) {
   if (values.length < 2) {
     return (
-      <div className="flex items-center text-xs text-neutral-600" style={{ height }}>
+      <div className="flex items-center text-xs text-ink-3" style={{ height }}>
         History builds up daily from here.
       </div>
     );

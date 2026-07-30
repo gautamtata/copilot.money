@@ -44,8 +44,8 @@ export default function PlaidOAuthPage() {
   }, [ready, linkToken, open]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-neutral-950">
-      <p className="text-sm text-neutral-400">
+    <main className="flex min-h-screen items-center justify-center bg-paper">
+      <p className="text-sm text-ink-2">
         {failed
           ? "Couldn't resume the bank connection — please start again from Accounts."
           : "Finishing your bank connection…"}

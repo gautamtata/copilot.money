@@ -19,11 +19,11 @@ export default function CashFlowPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Cash Flow</h1>
+        <h1 className="figure text-2xl font-bold">Cash Flow</h1>
         <select
           value={months}
           onChange={(e) => setMonths(Number(e.target.value))}
-          className="rounded-lg border border-neutral-700 bg-neutral-900 px-2 py-1.5 text-sm"
+          className="rounded-lg border border-line-strong bg-card px-2 py-1.5 text-sm"
         >
           <option value={3}>3 months</option>
           <option value={6}>6 months</option>
@@ -31,7 +31,7 @@ export default function CashFlowPage() {
         </select>
       </div>
 
-      {isLoading && <p className="text-sm text-neutral-500">Loading…</p>}
+      {isLoading && <p className="text-sm text-ink-3">Loading…</p>}
 
       <div className="flex flex-col gap-4">
         {data?.map((m) => {
@@ -40,7 +40,7 @@ export default function CashFlowPage() {
           return (
             <div
               key={m.month}
-              className="rounded-xl border border-neutral-800 bg-neutral-900 p-4"
+              className="rounded-xl border border-line bg-card p-4"
             >
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm font-medium">
@@ -50,12 +50,12 @@ export default function CashFlowPage() {
                   })}
                 </span>
                 <span
-                  className={`text-sm tabular-nums ${m.net_cents >= 0 ? "text-green-400" : "text-red-400"}`}
+                  className={`text-sm tabular-nums ${m.net_cents >= 0 ? "text-pos" : "text-neg"}`}
                 >
                   {m.net_cents >= 0 ? "+" : ""}
                   {formatCents(m.net_cents, { whole: true })} net
                   {savingsRate !== null && (
-                    <span className="ml-2 text-xs text-neutral-500">
+                    <span className="ml-2 text-xs text-ink-3">
                       {savingsRate}% saved
                     </span>
                   )}
@@ -63,26 +63,26 @@ export default function CashFlowPage() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-16 text-xs text-neutral-500">Income</span>
-                  <div className="h-4 flex-1 overflow-hidden rounded bg-neutral-800">
+                  <span className="w-16 text-xs text-ink-3">Income</span>
+                  <div className="h-4 flex-1 overflow-hidden rounded bg-moss">
                     <div
-                      className="h-full rounded bg-green-600/70"
+                      className="h-full rounded bg-pos/75"
                       style={{ width: `${(m.income_cents / max) * 100}%` }}
                     />
                   </div>
-                  <span className="w-20 text-right text-xs tabular-nums text-neutral-400">
+                  <span className="w-20 text-right text-xs tabular-nums text-ink-2">
                     {formatCents(m.income_cents, { whole: true })}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="w-16 text-xs text-neutral-500">Spending</span>
-                  <div className="h-4 flex-1 overflow-hidden rounded bg-neutral-800">
+                  <span className="w-16 text-xs text-ink-3">Spending</span>
+                  <div className="h-4 flex-1 overflow-hidden rounded bg-moss">
                     <div
-                      className="h-full rounded bg-red-500/60"
+                      className="h-full rounded bg-neg/65"
                       style={{ width: `${(m.expense_cents / max) * 100}%` }}
                     />
                   </div>
-                  <span className="w-20 text-right text-xs tabular-nums text-neutral-400">
+                  <span className="w-20 text-right text-xs tabular-nums text-ink-2">
                     {formatCents(m.expense_cents, { whole: true })}
                   </span>
                 </div>

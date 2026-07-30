@@ -51,23 +51,23 @@ export default function AccountsPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Accounts</h1>
+        <h1 className="figure text-2xl font-bold">Accounts</h1>
         <PlaidLinkButton />
       </div>
 
-      {isLoading && <p className="text-sm text-neutral-500">Loading…</p>}
+      {isLoading && <p className="text-sm text-ink-3">Loading…</p>}
       {!isLoading && groups.size === 0 && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-ink-3">
           No accounts yet — connect your first bank to get started.
         </p>
       )}
 
       {[...groups.entries()].map(([label, accounts]) => (
         <section key={label} className="mb-8">
-          <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <h2 className="mb-3 eyebrow">
             {label}
           </h2>
-          <div className="divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
+          <div className="divide-y divide-line rounded-xl border border-line bg-card">
             {accounts.map((account) => (
               <div key={account.id} className="flex items-center justify-between px-4 py-3">
                 <Link
@@ -77,10 +77,10 @@ export default function AccountsPage() {
                   <div className="text-sm font-medium hover:underline">
                     {account.name}
                     {account.mask && (
-                      <span className="ml-2 text-xs text-neutral-500">••{account.mask}</span>
+                      <span className="ml-2 text-xs text-ink-3">••{account.mask}</span>
                     )}
                   </div>
-                  <div className="text-xs text-neutral-500">{account.institution_name}</div>
+                  <div className="text-xs text-ink-3">{account.institution_name}</div>
                 </Link>
                 <div className="flex items-center gap-4">
                   <span className={`text-sm tabular-nums ${account.is_hidden ? "opacity-40" : ""}`}>
@@ -90,7 +90,7 @@ export default function AccountsPage() {
                   </span>
                   <button
                     onClick={() => toggleHidden.mutate(account)}
-                    className="text-xs text-neutral-500 hover:text-neutral-300"
+                    className="text-xs text-ink-3 hover:text-ink"
                   >
                     {account.is_hidden ? "Show" : "Hide"}
                   </button>

@@ -66,17 +66,17 @@ export default function RecurringsPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-8 flex items-baseline justify-between">
-        <h1 className="text-2xl font-semibold">Recurrings</h1>
+        <h1 className="figure text-2xl font-bold">Recurrings</h1>
         {data && (
-          <span className="text-sm text-neutral-400">
+          <span className="text-sm text-ink-2">
             ≈ {formatCents(data.monthly_total_cents, { whole: true })}/month
           </span>
         )}
       </div>
 
-      {isLoading && <p className="text-sm text-neutral-500">Loading…</p>}
+      {isLoading && <p className="text-sm text-ink-3">Loading…</p>}
       {!isLoading && groups.size === 0 && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-ink-3">
           No recurring payments detected yet — they appear as Plaid analyzes your
           transaction history.
         </p>
@@ -84,10 +84,10 @@ export default function RecurringsPage() {
 
       {CADENCE_ORDER.filter((c) => groups.has(c)).map((cadence) => (
         <section key={cadence} className="mb-8">
-          <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <h2 className="mb-3 eyebrow">
             {CADENCE_LABELS[cadence]}
           </h2>
-          <div className="divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
+          <div className="divide-y divide-line rounded-xl border border-line bg-card">
             {groups.get(cadence)!.map((r) => (
               <div
                 key={r.id}
@@ -98,7 +98,7 @@ export default function RecurringsPage() {
                     {r.category && <span className="mr-2">{r.category.emoji}</span>}
                     {r.merchant_name ?? r.name}
                   </div>
-                  <div className="text-xs text-neutral-500">
+                  <div className="text-xs text-ink-3">
                     {r.next_expected_date
                       ? `Next ~${new Date(`${r.next_expected_date}T00:00:00`).toLocaleDateString(
                           "en-US",
@@ -115,7 +115,7 @@ export default function RecurringsPage() {
                   </span>
                   <button
                     onClick={() => toggleActive.mutate(r)}
-                    className="text-xs text-neutral-500 hover:text-neutral-300"
+                    className="text-xs text-ink-3 hover:text-ink"
                   >
                     {r.is_active ? "Dismiss" : "Restore"}
                   </button>

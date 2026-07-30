@@ -42,14 +42,14 @@ export function CategoryPicker({ value, merchantLabel, onSelect }: Props) {
           setRuleMode(false);
           setOpen((v) => !v);
         }}
-        className="rounded-full border border-neutral-700 px-2.5 py-0.5 text-xs text-neutral-300 transition hover:border-neutral-500"
+        className="rounded-full border border-line-strong px-2.5 py-0.5 text-xs text-ink-2 transition hover:border-line-strong"
       >
         {value ? `${value.emoji} ${value.name}` : "Categorize"}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-1 w-64 rounded-xl border border-neutral-700 bg-neutral-900 p-1 shadow-xl">
-          <label className="flex cursor-pointer items-center gap-2 px-3 py-2 text-xs text-neutral-400">
+        <div className="absolute right-0 z-20 mt-1 w-64 rounded-xl border border-line-strong bg-card p-1 shadow-xl">
+          <label className="flex cursor-pointer items-center gap-2 px-3 py-2 text-xs text-ink-2">
             <input
               type="checkbox"
               checked={ruleMode}
@@ -65,8 +65,8 @@ export function CategoryPicker({ value, merchantLabel, onSelect }: Props) {
                   onSelect(category, ruleMode);
                   setOpen(false);
                 }}
-                className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm hover:bg-neutral-800 ${
-                  value?.id === category.id ? "bg-neutral-800" : ""
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-sm hover:bg-moss ${
+                  value?.id === category.id ? "bg-moss" : ""
                 }`}
               >
                 <span>{category.emoji}</span>

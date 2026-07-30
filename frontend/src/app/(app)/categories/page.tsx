@@ -33,7 +33,7 @@ function BudgetCell({ categoryId, budgetCents }: { categoryId: string; budgetCen
   });
 
   return (
-    <div className="flex items-center gap-1 text-xs text-neutral-500">
+    <div className="flex items-center gap-1 text-xs text-ink-3">
       $
       <input
         value={value}
@@ -44,7 +44,7 @@ function BudgetCell({ categoryId, budgetCents }: { categoryId: string; budgetCen
           if (cents !== (budgetCents ?? 0)) save.mutate(cents);
         }}
         placeholder="—"
-        className="w-16 rounded border border-neutral-800 bg-neutral-950 px-1.5 py-0.5 text-right text-xs tabular-nums text-neutral-300 outline-none focus:border-neutral-500"
+        className="w-16 rounded border border-line bg-paper px-1.5 py-0.5 text-right text-xs tabular-nums text-ink-2 outline-none focus:border-pine"
       />
       /mo
     </div>
@@ -81,23 +81,23 @@ function CategoryRow({
           <input
             value={emoji}
             onChange={(e) => setEmoji(e.target.value)}
-            className="w-12 rounded border border-neutral-700 bg-neutral-950 px-1 py-1 text-center text-sm"
+            className="w-12 rounded border border-line-strong bg-paper px-1 py-1 text-center text-sm"
           />
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="flex-1 rounded border border-neutral-700 bg-neutral-950 px-2 py-1 text-sm"
+            className="flex-1 rounded border border-line-strong bg-paper px-2 py-1 text-sm"
           />
           <button
             onClick={() => {
               save.mutate({ name, emoji });
               setEditing(false);
             }}
-            className="text-xs text-green-400"
+            className="text-xs text-pos"
           >
             Save
           </button>
-          <button onClick={() => setEditing(false)} className="text-xs text-neutral-500">
+          <button onClick={() => setEditing(false)} className="text-xs text-ink-3">
             Cancel
           </button>
         </div>
@@ -105,9 +105,9 @@ function CategoryRow({
         <>
           <span className="text-sm">
             {category.emoji} {category.name}
-            {category.is_income && <span className="ml-2 text-xs text-green-500">income</span>}
+            {category.is_income && <span className="ml-2 text-xs text-pos">income</span>}
             {category.exclude_from_budget && (
-              <span className="ml-2 text-xs text-neutral-500">excluded from budget</span>
+              <span className="ml-2 text-xs text-ink-3">excluded from budget</span>
             )}
           </span>
           <div className="flex items-center gap-3">
@@ -116,20 +116,20 @@ function CategoryRow({
             )}
             <button
               onClick={() => save.mutate({ exclude_from_budget: !category.exclude_from_budget })}
-              className="text-xs text-neutral-500 hover:text-neutral-300"
+              className="text-xs text-ink-3 hover:text-ink"
             >
               {category.exclude_from_budget ? "Include in budget" : "Exclude from budget"}
             </button>
             <button
               onClick={() => setEditing(true)}
-              className="text-xs text-neutral-500 hover:text-neutral-300"
+              className="text-xs text-ink-3 hover:text-ink"
             >
               Edit
             </button>
             {!category.is_system && (
               <button
                 onClick={() => confirm(`Delete "${category.name}"?`) && remove.mutate()}
-                className="text-xs text-neutral-500 hover:text-red-400"
+                className="text-xs text-ink-3 hover:text-neg"
               >
                 Delete
               </button>
@@ -178,10 +178,10 @@ export default function CategoriesPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="mb-8 text-2xl font-semibold">Categories</h1>
+      <h1 className="mb-8 figure text-2xl font-bold">Categories</h1>
 
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <h2 className="eyebrow">
           Categories
         </h2>
         <div className="flex gap-2">
@@ -189,17 +189,17 @@ export default function CategoriesPage() {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="New category name"
-            className="rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-1.5 text-sm outline-none placeholder:text-neutral-600"
+            className="rounded-lg border border-line-strong bg-card px-3 py-1.5 text-sm outline-none placeholder:text-ink-3"
           />
           <button
             onClick={() => newName.trim() && createCategory.mutate()}
-            className="rounded-lg bg-neutral-100 px-3 py-1.5 text-sm font-medium text-neutral-900"
+            className="rounded-lg bg-pine px-3 py-1.5 text-sm font-medium text-white"
           >
             Add
           </button>
         </div>
       </div>
-      <div className="mb-10 divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
+      <div className="mb-10 divide-y divide-line rounded-xl border border-line bg-card">
         {categories?.map((category) => (
           <CategoryRow
             key={category.id}
@@ -209,26 +209,26 @@ export default function CategoriesPage() {
         ))}
       </div>
 
-      <h2 className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-500">Rules</h2>
+      <h2 className="mb-3 eyebrow">Rules</h2>
       {(rules?.length ?? 0) === 0 && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-ink-3">
           No rules yet — create one from a transaction&apos;s category picker with “Always for…”.
         </p>
       )}
-      <div className="divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
+      <div className="divide-y divide-line rounded-xl border border-line bg-card">
         {rules?.map((rule) => {
           const category = categoryById.get(rule.category_id);
           return (
             <div key={rule.id} className="flex items-center justify-between px-4 py-2.5">
               <span className="text-sm">
                 “{rule.merchant_pattern}”{" "}
-                <span className="text-neutral-500">
+                <span className="text-ink-3">
                   ({rule.match_type}) → {category ? `${category.emoji} ${category.name}` : "?"}
                 </span>
               </span>
               <button
                 onClick={() => deleteRule.mutate(rule.id)}
-                className="text-xs text-neutral-500 hover:text-red-400"
+                className="text-xs text-ink-3 hover:text-neg"
               >
                 Delete
               </button>

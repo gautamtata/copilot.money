@@ -1,26 +1,77 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ── Banknote design system ─────────────────────────────────────────────
+   Light "engraved currency" identity: green-tinted paper, deep pine ink,
+   Clarendon slab numerals, statement-mono labels. See frontend/AGENTS.md. */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  /* Surfaces */
+  --color-paper: #f4f6f1; /* app background — green-tinted paper */
+  --color-card: #ffffff;
+  --color-moss: #eaf0e9; /* tinted fills, hovers, chips */
+  --color-line: #e2e7df; /* hairline borders */
+  --color-line-strong: #c9d2c7;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Ink */
+  --color-ink: #182420; /* primary text */
+  --color-ink-2: #55645b; /* secondary text */
+  --color-ink-3: #8a978d; /* muted text */
+
+  /* Brand — intaglio green */
+  --color-pine: #175a43;
+  --color-pine-deep: #0c3b2a;
+  --color-pine-soft: #dcE8dd;
+
+  /* Money semantics */
+  --color-pos: #1e7a4f; /* inflows, under budget */
+  --color-neg: #a63a2c; /* debt, over budget */
+
+  /* Validated categorical chart palette (fixed order, never cycled) */
+  --color-cat-1: #24845a;
+  --color-cat-2: #a9761c;
+  --color-cat-3: #3b63c4;
+  --color-cat-4: #c04e2f;
+  --color-cat-5: #8b51b8;
+  --color-cat-6: #c23a6b;
+
+  /* Type */
+  --font-display: var(--font-besley), "Besley", Georgia, serif;
+  --font-sans: var(--font-public-sans), "Public Sans", system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum";
+}
+
+/* Big engraved numerals */
+.figure {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.015em;
+}
+
+/* Statement-print eyebrow labels */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-3);
+}
+
+::selection {
+  background: var(--color-pine-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -59,18 +59,18 @@ function TransactionRow({ txn }: { txn: Transaction }) {
   return (
     <div className="flex items-center justify-between gap-4 px-4 py-3">
       <div className="min-w-0 flex-1">
-        <div className={`truncate text-sm ${txn.pending ? "italic text-neutral-400" : ""}`}>
+        <div className={`truncate text-sm ${txn.pending ? "italic text-ink-2" : ""}`}>
           {txn.merchant_name ?? txn.name}
-          {txn.pending && <span className="ml-2 text-xs text-neutral-500">pending</span>}
+          {txn.pending && <span className="ml-2 text-xs text-ink-3">pending</span>}
         </div>
-        <div className="truncate text-xs text-neutral-500">{txn.account_name}</div>
+        <div className="truncate text-xs text-ink-3">{txn.account_name}</div>
       </div>
       <CategoryPicker
         value={txn.category}
         merchantLabel={txn.merchant_name ?? txn.name}
         onSelect={(category, createRule) => setCategory.mutate({ category, createRule })}
       />
-      <span className={`w-24 text-right text-sm tabular-nums ${income ? "text-green-400" : ""}`}>
+      <span className={`w-24 text-right text-sm tabular-nums ${income ? "text-pos" : ""}`}>
         {income ? `+${formatCents(-txn.amount_cents)}` : formatCents(txn.amount_cents)}
       </span>
     </div>
@@ -123,11 +123,11 @@ export default function TransactionsPage() {
   return (
     <div className="max-w-3xl">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Transactions</h1>
+        <h1 className="figure text-2xl font-bold">Transactions</h1>
         <button
           onClick={() => syncNow.mutate()}
           disabled={syncNow.isPending}
-          className="rounded-lg border border-neutral-700 px-3 py-1.5 text-sm text-neutral-300 transition hover:border-neutral-500 disabled:opacity-50"
+          className="rounded-lg border border-line-strong px-3 py-1.5 text-sm text-ink-2 transition hover:border-line-strong disabled:opacity-50"
         >
           {syncNow.isPending ? "Syncing…" : "Sync now"}
         </button>
@@ -138,12 +138,12 @@ export default function TransactionsPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search transactions…"
-          className="flex-1 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm outline-none placeholder:text-neutral-600 focus:border-neutral-500"
+          className="flex-1 rounded-lg border border-line-strong bg-card px-3 py-2 text-sm outline-none placeholder:text-ink-3 focus:border-pine"
         />
         <select
           value={categoryId}
           onChange={(e) => setCategoryId(e.target.value)}
-          className="rounded-lg border border-neutral-700 bg-neutral-900 px-2 py-2 text-sm"
+          className="rounded-lg border border-line-strong bg-card px-2 py-2 text-sm"
         >
           <option value="">All categories</option>
           {categories?.map((c) => (
@@ -155,7 +155,7 @@ export default function TransactionsPage() {
         <select
           value={accountId}
           onChange={(e) => setAccountId(e.target.value)}
-          className="rounded-lg border border-neutral-700 bg-neutral-900 px-2 py-2 text-sm"
+          className="rounded-lg border border-line-strong bg-card px-2 py-2 text-sm"
         >
           <option value="">All accounts</option>
           {accounts?.accounts.map((a) => (
@@ -166,21 +166,21 @@ export default function TransactionsPage() {
         </select>
       </div>
 
-      {isLoading && <p className="text-sm text-neutral-500">Loading…</p>}
+      {isLoading && <p className="text-sm text-ink-3">Loading…</p>}
       {!isLoading && byDate.size === 0 && (
-        <p className="text-sm text-neutral-500">No transactions found.</p>
+        <p className="text-sm text-ink-3">No transactions found.</p>
       )}
 
       {[...byDate.entries()].map(([date, txns]) => (
         <section key={date} className="mb-6">
-          <h2 className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <h2 className="mb-2 eyebrow">
             {new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
               day: "numeric",
             })}
           </h2>
-          <div className="divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
+          <div className="divide-y divide-line rounded-xl border border-line bg-card">
             {txns.map((txn) => (
               <TransactionRow key={txn.id} txn={txn} />
             ))}
@@ -192,7 +192,7 @@ export default function TransactionsPage() {
         <button
           onClick={() => fetchNextPage()}
           disabled={isFetching}
-          className="mb-8 w-full rounded-lg border border-neutral-800 py-2 text-sm text-neutral-400 transition hover:border-neutral-600 disabled:opacity-50"
+          className="mb-8 w-full rounded-lg border border-line py-2 text-sm text-ink-2 transition hover:border-line-strong disabled:opacity-50"
         >
           {isFetching ? "Loading…" : "Load more"}
         </button>

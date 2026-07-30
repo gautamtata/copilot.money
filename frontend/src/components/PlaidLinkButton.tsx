@@ -64,7 +64,7 @@ export function PlaidLinkButton({ itemId, kind = "bank", label = "Add account" }
         }
       }}
       disabled={loading}
-      className="rounded-lg bg-neutral-100 px-4 py-2 text-sm font-medium text-neutral-900 transition hover:bg-white disabled:opacity-50"
+      className="rounded-lg bg-pine px-4 py-2 text-sm font-medium text-white transition hover:bg-pine-deep disabled:opacity-50"
     >
       {loading ? "Connecting…" : label}
     </button>

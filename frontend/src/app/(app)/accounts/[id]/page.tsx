@@ -28,24 +28,24 @@ export default function AccountDetailPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="max-w-3xl">
-      <Link href="/accounts" className="text-xs text-neutral-500 hover:text-neutral-300">
+      <Link href="/accounts" className="text-xs text-ink-3 hover:text-ink">
         ← Accounts
       </Link>
-      <h1 className="mb-1 mt-3 text-2xl font-semibold">{account?.name ?? "Account"}</h1>
-      <div className="mb-8 text-lg tabular-nums text-neutral-300">
+      <h1 className="mb-1 mt-3 figure text-2xl font-bold">{account?.name ?? "Account"}</h1>
+      <div className="mb-8 text-lg tabular-nums text-ink-2">
         {account?.current_balance_cents != null
           ? formatCents(account.current_balance_cents)
           : ""}
       </div>
 
-      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-5">
-        <h2 className="mb-4 text-sm font-medium text-neutral-300">Balance history</h2>
+      <div className="rounded-xl border border-line bg-card p-5">
+        <h2 className="mb-4 text-sm font-medium text-ink-2">Balance history</h2>
         <Sparkline
           values={(history ?? [])
             .filter((p) => p.current_balance_cents != null)
             .map((p) => p.current_balance_cents as number)}
           height={80}
-          stroke="#a3a3a3"
+          stroke="#175a43"
         />
       </div>
     </div>
