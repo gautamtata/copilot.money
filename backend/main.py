@@ -9,6 +9,7 @@ from app.routers import (
     categories,
     investments,
     plaid,
+    recurrings,
     transactions,
     webhooks,
 )
@@ -43,6 +44,7 @@ api.include_router(transactions.router)
 api.include_router(categories.router)
 api.include_router(budgets.router)
 api.include_router(investments.router)
+api.include_router(recurrings.router)
 
 app.include_router(public)
 app.include_router(api)

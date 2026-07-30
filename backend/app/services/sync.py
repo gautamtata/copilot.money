@@ -10,6 +10,7 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
+from plaid.exceptions import ApiException
 from plaid.model.transactions_sync_request import TransactionsSyncRequest
 from plaid.model.transactions_sync_request_options import TransactionsSyncRequestOptions
 from sqlalchemy import select, text
@@ -39,6 +40,25 @@ async def sync_all_items() -> None:
             logger.exception("Sync failed for item %s", item_id)
 
 
+async def initial_item_sync(item_id: uuid.UUID) -> None:
+    """Everything a fresh link needs: transactions, holdings, liabilities,
+    recurring streams — each skipped gracefully where the item lacks the product."""
+    from app.services.investments import sync_holdings, sync_liabilities
+    from app.services.recurring import sync_recurrings
+
+    await sync_item(item_id)
+    async with async_session_factory() as session:
+        item = await session.get(PlaidItem, item_id)
+        if item is None:
+            return
+        for step in (sync_holdings, sync_liabilities, sync_recurrings):
+            try:
+                await step(session, item)
+            except Exception:
+                logger.exception("%s failed for item %s", step.__name__, item_id)
+        await session.commit()
+
+
 async def sync_item(item_id: uuid.UUID) -> None:
     client = get_plaid_client()
     while True:
@@ -51,12 +71,22 @@ async def sync_item(item_id: uuid.UUID) -> None:
             kwargs: dict = {"access_token": item.access_token}
             if cursor_before:
                 kwargs["cursor"] = cursor_before
-            response = client.transactions_sync(
-                TransactionsSyncRequest(
-                    **kwargs,
-                    options=TransactionsSyncRequestOptions(include_personal_finance_category=True),
+            try:
+                response = client.transactions_sync(
+                    TransactionsSyncRequest(
+                        **kwargs,
+                        options=TransactionsSyncRequestOptions(
+                            include_personal_finance_category=True
+                        ),
+                    )
                 )
-            )
+            except ApiException as exc:
+                # Investments-only items (e.g. Robinhood) have no transactions product.
+                from app.services.investments import is_skippable_plaid_error
+
+                if is_skippable_plaid_error(exc):
+                    return
+                raise
 
             # Serialize concurrent syncs of the same item; if another sync
             # advanced the cursor while we fetched, drop this page and refetch.

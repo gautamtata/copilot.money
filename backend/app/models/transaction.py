@@ -41,6 +41,9 @@ class Transaction(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     plaid_category_detailed: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
     excluded: Mapped[bool] = mapped_column(default=False, server_default="false")
+    recurring_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("recurrings.id", ondelete="SET NULL")
+    )
     deleted_at: Mapped[datetime | None]
 
     account: Mapped[Account] = relationship()

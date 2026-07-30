@@ -26,7 +26,7 @@ SKIPPABLE_PLAID_ERRORS = (
 )
 
 
-def _is_skippable(exc: ApiException) -> bool:
+def is_skippable_plaid_error(exc: ApiException) -> bool:
     return any(code in str(exc.body) for code in SKIPPABLE_PLAID_ERRORS)
 
 
@@ -36,7 +36,7 @@ async def sync_holdings(session: AsyncSession, item: PlaidItem) -> None:
             InvestmentsHoldingsGetRequest(access_token=item.access_token)
         )
     except ApiException as exc:
-        if _is_skippable(exc):
+        if is_skippable_plaid_error(exc):
             return
         raise
 
@@ -110,7 +110,7 @@ async def sync_liabilities(session: AsyncSession, item: PlaidItem) -> None:
             LiabilitiesGetRequest(access_token=item.access_token)
         )
     except ApiException as exc:
-        if _is_skippable(exc):
+        if is_skippable_plaid_error(exc):
             return
         raise
 

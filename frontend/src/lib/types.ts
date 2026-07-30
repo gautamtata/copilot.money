@@ -296,6 +296,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/backend/recurrings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Recurrings */
+        get: operations["list_recurrings_api_backend_recurrings_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backend/recurrings/{recurring_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Recurring */
+        patch: operations["patch_recurring_api_backend_recurrings__recurring_id__patch"];
+        trace?: never;
+    };
     "/api/backend/sync": {
         parameters: {
             query?: never;
@@ -652,6 +686,47 @@ export interface components {
             last_synced_at: string | null;
             /** Status */
             status: string;
+        };
+        /** RecurringOut */
+        RecurringOut: {
+            /** Average Amount Cents */
+            average_amount_cents: number | null;
+            /** Cadence */
+            cadence: string;
+            category: components["schemas"]["CategoryOut"] | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Is Active */
+            is_active: boolean;
+            /** Last Amount Cents */
+            last_amount_cents: number | null;
+            /** Last Date */
+            last_date: string | null;
+            /** Merchant Name */
+            merchant_name: string | null;
+            /** Monthly Cents */
+            monthly_cents: number;
+            /** Name */
+            name: string;
+            /** Next Expected Date */
+            next_expected_date: string | null;
+        };
+        /** RecurringPatch */
+        RecurringPatch: {
+            /** Category Id */
+            category_id?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /** RecurringsResponse */
+        RecurringsResponse: {
+            /** Monthly Total Cents */
+            monthly_total_cents: number;
+            /** Recurrings */
+            recurrings: components["schemas"]["RecurringOut"][];
         };
         /** RuleApplyResult */
         RuleApplyResult: {
@@ -1422,6 +1497,74 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LinkTokenResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_recurrings_api_backend_recurrings_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_recurring_api_backend_recurrings__recurring_id__patch: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string;
+            };
+            path: {
+                recurring_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RecurringPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RecurringOut"];
                 };
             };
             /** @description Validation Error */

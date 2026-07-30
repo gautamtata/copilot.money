@@ -35,6 +35,60 @@ function Card({
   );
 }
 
+type Recurring = {
+  id: string;
+  name: string;
+  merchant_name: string | null;
+  category: { emoji: string } | null;
+  average_amount_cents: number | null;
+  next_expected_date: string | null;
+  is_active: boolean;
+};
+
+function UpcomingCharges() {
+  const { data } = useQuery({
+    queryKey: ["recurrings"],
+    queryFn: () => api<{ recurrings: Recurring[] }>("/recurrings"),
+  });
+
+  const now = new Date();
+  const horizon = new Date(now.getTime() + 14 * 24 * 3600 * 1000);
+  const upcoming = (data?.recurrings ?? [])
+    .filter(
+      (r) =>
+        r.is_active &&
+        r.next_expected_date &&
+        new Date(`${r.next_expected_date}T00:00:00`) <= horizon,
+    )
+    .sort((a, b) => (a.next_expected_date! < b.next_expected_date! ? -1 : 1))
+    .slice(0, 6);
+
+  if (upcoming.length === 0) {
+    return <p className="text-sm text-neutral-500">There are no upcoming payments.</p>;
+  }
+  return (
+    <div className="flex flex-col gap-2.5">
+      {upcoming.map((r) => (
+        <div key={r.id} className="flex items-center justify-between text-sm">
+          <span className="min-w-0 flex-1 truncate">
+            {r.category && <span className="mr-2">{r.category.emoji}</span>}
+            {r.merchant_name ?? r.name}
+            <span className="ml-2 text-xs text-neutral-500">
+              {new Date(`${r.next_expected_date}T00:00:00`).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </span>
+          </span>
+          <span className="ml-4 tabular-nums text-neutral-300">
+            {r.average_amount_cents != null ? formatCents(r.average_amount_cents) : "—"}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { data: summary } = useQuery({
     queryKey: ["budget-summary"],
@@ -206,6 +260,17 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+      </Card>
+
+      <Card
+        title="Next two weeks"
+        action={
+          <Link href="/recurrings" className="text-xs text-neutral-500 hover:text-neutral-300">
+            Recurrings →
+          </Link>
+        }
+      >
+        <UpcomingCharges />
       </Card>
 
       <Card title="This month">

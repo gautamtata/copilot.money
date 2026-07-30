@@ -39,7 +39,7 @@ async def exchange(
     background: BackgroundTasks,
     session: AsyncSession = Depends(get_session),
 ) -> ExchangeResponse:
-    from app.services.sync import sync_item
+    from app.services.sync import initial_item_sync
 
     item = await plaid_items.exchange_public_token(
         session, body.public_token, body.institution_id, body.institution_name
@@ -47,7 +47,7 @@ async def exchange(
     count = await session.scalar(
         select(func.count()).select_from(Account).where(Account.plaid_item_id == item.id)
     )
-    background.add_task(sync_item, item.id)
+    background.add_task(initial_item_sync, item.id)
     return ExchangeResponse(item=PlaidItemOut(**plaid_items.item_out_dict(item, count or 0)))
 
 

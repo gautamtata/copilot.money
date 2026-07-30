@@ -29,7 +29,11 @@ async def process_webhook(event_id) -> None:
                 await _handle_sync_webhook(session, event)
             elif event.webhook_type in ("HOLDINGS", "INVESTMENTS_TRANSACTIONS"):
                 await _handle_holdings_webhook(session, event)
-            # RECURRING webhooks are wired up in M6.
+            elif (
+                event.webhook_type == "TRANSACTIONS"
+                and event.webhook_code == "RECURRING_TRANSACTIONS_UPDATE"
+            ):
+                await _handle_recurring_webhook(session, event)
             event.processed_at = datetime.now(UTC)
         except Exception as exc:
             event.error = str(exc)
@@ -46,6 +50,18 @@ async def _handle_sync_webhook(session, event: PlaidWebhookEvent) -> None:
     ).scalar_one_or_none()
     if item is not None:
         await sync_item(item.id)
+
+
+async def _handle_recurring_webhook(session, event: PlaidWebhookEvent) -> None:
+    from app.services.recurring import sync_recurrings
+
+    item = (
+        await session.execute(
+            select(PlaidItem).where(PlaidItem.plaid_item_id == event.plaid_item_id)
+        )
+    ).scalar_one_or_none()
+    if item is not None:
+        await sync_recurrings(session, item)
 
 
 async def _handle_holdings_webhook(session, event: PlaidWebhookEvent) -> None:

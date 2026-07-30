@@ -15,6 +15,7 @@ from app.models import PlaidItem
 from app.services.investments import sync_holdings, sync_liabilities
 from app.services.net_worth import write_snapshots
 from app.services.plaid_items import sync_accounts
+from app.services.recurring import sync_recurrings
 from app.services.sync import sync_item
 
 logger = logging.getLogger(__name__)
@@ -42,6 +43,7 @@ async def daily_maintenance() -> None:
                 await sync_accounts(session, item)
                 await sync_holdings(session, item)
                 await sync_liabilities(session, item)
+                await sync_recurrings(session, item)
             except Exception:
                 logger.exception("Balance/holdings refresh failed for item %s", item.id)
         await write_snapshots(session)
