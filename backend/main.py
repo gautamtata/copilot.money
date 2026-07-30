@@ -1,6 +1,14 @@
-def main():
-    print("Hello from backend!")
+from fastapi import APIRouter, FastAPI
+
+app = FastAPI(title="copilot.money API")
+
+# All routes live under /api/backend to match the Vercel rewrite in vercel.json.
+router = APIRouter(prefix="/api/backend")
 
 
-if __name__ == "__main__":
-    main()
+@router.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
+app.include_router(router)
