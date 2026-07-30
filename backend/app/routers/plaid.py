@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -33,14 +33,19 @@ async def link_token(
 
 @router.post("/exchange")
 async def exchange(
-    body: ExchangeRequest, session: AsyncSession = Depends(get_session)
+    body: ExchangeRequest,
+    background: BackgroundTasks,
+    session: AsyncSession = Depends(get_session),
 ) -> ExchangeResponse:
+    from app.services.sync import sync_item
+
     item = await plaid_items.exchange_public_token(
         session, body.public_token, body.institution_id, body.institution_name
     )
     count = await session.scalar(
         select(func.count()).select_from(Account).where(Account.plaid_item_id == item.id)
     )
+    background.add_task(sync_item, item.id)
     return ExchangeResponse(item=PlaidItemOut(**plaid_items.item_out_dict(item, count or 0)))
 
 

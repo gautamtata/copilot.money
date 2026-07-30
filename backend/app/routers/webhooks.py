@@ -22,11 +22,28 @@ async def process_webhook(event_id) -> None:
         try:
             if event.webhook_type == "ITEM":
                 await _handle_item_webhook(session, event)
-            # TRANSACTIONS / HOLDINGS webhooks are wired up in later milestones.
+            elif (
+                event.webhook_type == "TRANSACTIONS"
+                and event.webhook_code == "SYNC_UPDATES_AVAILABLE"
+            ):
+                await _handle_sync_webhook(session, event)
+            # HOLDINGS / RECURRING webhooks are wired up in later milestones.
             event.processed_at = datetime.now(UTC)
         except Exception as exc:
             event.error = str(exc)
         await session.commit()
+
+
+async def _handle_sync_webhook(session, event: PlaidWebhookEvent) -> None:
+    from app.services.sync import sync_item
+
+    item = (
+        await session.execute(
+            select(PlaidItem).where(PlaidItem.plaid_item_id == event.plaid_item_id)
+        )
+    ).scalar_one_or_none()
+    if item is not None:
+        await sync_item(item.id)
 
 
 async def _handle_item_webhook(session, event: PlaidWebhookEvent) -> None:

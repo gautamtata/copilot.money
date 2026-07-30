@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, FastAPI
 
 from app.auth import require_api_token
-from app.routers import accounts, plaid, webhooks
+from app.routers import accounts, categories, plaid, transactions, webhooks
 
 app = FastAPI(title="copilot.money API")
 
@@ -20,6 +20,8 @@ def health() -> dict[str, str]:
 public.include_router(webhooks.router)
 api.include_router(plaid.router)
 api.include_router(accounts.router)
+api.include_router(transactions.router)
+api.include_router(categories.router)
 
 app.include_router(public)
 app.include_router(api)
