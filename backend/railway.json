@@ -1,7 +1,7 @@
 {
   "$schema": "https://railway.com/railway.schema.json",
   "deploy": {
-    "startCommand": "alembic upgrade head && hypercorn main:app --bind 0.0.0.0:$PORT --bind [::]:$PORT",
+    "startCommand": "alembic upgrade head && hypercorn main:app --bind [::]:$PORT",
     "healthcheckPath": "/api/backend/health"
   }
 }
