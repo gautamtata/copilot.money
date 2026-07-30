@@ -8,7 +8,9 @@ import { auth } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login");
+  if (!session || session.user.email !== process.env.ALLOWED_USER_EMAIL) {
+    redirect("/login");
+  }
 
   return (
     <Providers>
