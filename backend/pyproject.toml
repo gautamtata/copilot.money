@@ -1,0 +1,14 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "agno>=2.8.5",
+    "anthropic>=0.120.2",
+    "asyncpg>=0.31.0",
+    "fastapi>=0.141.1",
+    "openai>=2.50.0",
+    "uvicorn>=0.52.0",
+]
