@@ -15,7 +15,49 @@ type Rule = {
   priority: number;
 };
 
-function CategoryRow({ category }: { category: Category }) {
+function BudgetCell({ categoryId, budgetCents }: { categoryId: string; budgetCents: number | null }) {
+  const queryClient = useQueryClient();
+  const [value, setValue] = useState(budgetCents != null ? String(budgetCents / 100) : "");
+
+  const save = useMutation({
+    mutationFn: (amountCents: number) =>
+      api("/budgets", {
+        method: "PUT",
+        body: JSON.stringify({
+          category_id: categoryId,
+          month: new Date().toISOString().slice(0, 8) + "01",
+          amount_cents: amountCents,
+        }),
+      }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["budget-summary"] }),
+  });
+
+  return (
+    <div className="flex items-center gap-1 text-xs text-neutral-500">
+      $
+      <input
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={() => {
+          const dollars = parseFloat(value);
+          const cents = Number.isFinite(dollars) ? Math.round(dollars * 100) : 0;
+          if (cents !== (budgetCents ?? 0)) save.mutate(cents);
+        }}
+        placeholder="—"
+        className="w-16 rounded border border-neutral-800 bg-neutral-950 px-1.5 py-0.5 text-right text-xs tabular-nums text-neutral-300 outline-none focus:border-neutral-500"
+      />
+      /mo
+    </div>
+  );
+}
+
+function CategoryRow({
+  category,
+  budgetCents,
+}: {
+  category: Category;
+  budgetCents: number | null;
+}) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(category.name);
@@ -69,6 +111,9 @@ function CategoryRow({ category }: { category: Category }) {
             )}
           </span>
           <div className="flex items-center gap-3">
+            {!category.is_income && !category.exclude_from_budget && (
+              <BudgetCell categoryId={category.id} budgetCents={budgetCents} />
+            )}
             <button
               onClick={() => save.mutate({ exclude_from_budget: !category.exclude_from_budget })}
               className="text-xs text-neutral-500 hover:text-neutral-300"
@@ -103,6 +148,16 @@ export default function CategoriesPage() {
     queryKey: ["category-rules"],
     queryFn: () => api<Rule[]>("/category_rules"),
   });
+  const { data: summary } = useQuery({
+    queryKey: ["budget-summary"],
+    queryFn: () =>
+      api<{ categories: { category: Category; budget_cents: number | null }[] }>(
+        "/budgets/summary",
+      ),
+  });
+  const budgetByCategory = new Map(
+    summary?.categories.map((c) => [c.category.id, c.budget_cents]) ?? [],
+  );
   const [newName, setNewName] = useState("");
 
   const createCategory = useMutation({
@@ -146,7 +201,11 @@ export default function CategoriesPage() {
       </div>
       <div className="mb-10 divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
         {categories?.map((category) => (
-          <CategoryRow key={category.id} category={category} />
+          <CategoryRow
+            key={category.id}
+            category={category}
+            budgetCents={budgetByCategory.get(category.id) ?? null}
+          />
         ))}
       </div>
 

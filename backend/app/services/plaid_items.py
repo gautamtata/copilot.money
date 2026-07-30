@@ -33,6 +33,10 @@ def create_link_token(access_token: str | None = None) -> str:
         kwargs["products"] = [Products("transactions")]
     if settings.plaid_webhook_url:
         kwargs["webhook"] = settings.plaid_webhook_url
+    if settings.plaid_redirect_uri:
+        # Required for OAuth institutions (Chase, Amex, ...); must be
+        # registered under Allowed redirect URIs in the Plaid dashboard.
+        kwargs["redirect_uri"] = settings.plaid_redirect_uri
     response = get_plaid_client().link_token_create(LinkTokenCreateRequest(**kwargs))
     return response["link_token"]
 

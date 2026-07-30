@@ -54,6 +54,9 @@ export function PlaidLinkButton({ itemId, label = "Add account" }: Props) {
             method: "POST",
             body: JSON.stringify({ item_id: itemId ?? null }),
           });
+          // OAuth banks redirect the whole page; /plaid-oauth resumes Link
+          // with this token after the bank sends the user back.
+          localStorage.setItem("plaid_link_token", link_token);
           setLinkToken(link_token);
         } finally {
           setLoading(false);

@@ -38,6 +38,57 @@ export interface paths {
         patch: operations["patch_account_api_backend_accounts__account_id__patch"];
         trace?: never;
     };
+    "/api/backend/budgets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Put Budget */
+        put: operations["put_budget_api_backend_budgets_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backend/budgets/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Budget Summary */
+        get: operations["get_budget_summary_api_backend_budgets_summary_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backend/cashflow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Cashflow */
+        get: operations["get_cashflow_api_backend_cashflow_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/backend/categories": {
         parameters: {
             query?: never;
@@ -307,6 +358,59 @@ export interface components {
         AccountsResponse: {
             /** Accounts */
             accounts: components["schemas"]["AccountOut"][];
+        };
+        /** BudgetCategorySummary */
+        BudgetCategorySummary: {
+            /** Budget Cents */
+            budget_cents: number | null;
+            category: components["schemas"]["CategoryOut"];
+            /** Spent Cents */
+            spent_cents: number;
+        };
+        /** BudgetPut */
+        BudgetPut: {
+            /** Amount Cents */
+            amount_cents: number;
+            /**
+             * Category Id
+             * Format: uuid
+             */
+            category_id: string;
+            /**
+             * Month
+             * Format: date
+             */
+            month: string;
+        };
+        /** BudgetSummary */
+        BudgetSummary: {
+            /** Categories */
+            categories: components["schemas"]["BudgetCategorySummary"][];
+            /** Income Cents */
+            income_cents: number;
+            /**
+             * Month
+             * Format: date
+             */
+            month: string;
+            /** Total Budget Cents */
+            total_budget_cents: number;
+            /** Total Spent Cents */
+            total_spent_cents: number;
+        };
+        /** CashflowMonth */
+        CashflowMonth: {
+            /** Expense Cents */
+            expense_cents: number;
+            /** Income Cents */
+            income_cents: number;
+            /**
+             * Month
+             * Format: date
+             */
+            month: string;
+            /** Net Cents */
+            net_cents: number;
         };
         /** CategoryCreate */
         CategoryCreate: {
@@ -591,6 +695,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_budget_api_backend_budgets_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BudgetPut"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_budget_summary_api_backend_budgets_summary_get: {
+        parameters: {
+            query?: {
+                month?: string | null;
+            };
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BudgetSummary"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_cashflow_api_backend_cashflow_get: {
+        parameters: {
+            query?: {
+                months?: number;
+            };
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CashflowMonth"][];
                 };
             };
             /** @description Validation Error */

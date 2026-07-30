@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     plaid_production_secret: str = ""
     plaid_env: str = "sandbox"
     plaid_webhook_url: str = ""
+    plaid_redirect_uri: str = ""
     anthropic_api_key: str = ""
 
     @property
