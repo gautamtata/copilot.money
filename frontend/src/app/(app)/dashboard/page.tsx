@@ -3,9 +3,17 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
+import { Sparkline } from "@/components/Sparkline";
 import { api } from "@/lib/api";
 import type { BudgetSummary, CashflowMonth, TransactionsPageData } from "@/lib/budget-types";
 import { formatCents } from "@/lib/format";
+
+type NetWorth = {
+  current_assets_cents: number;
+  current_liabilities_cents: number;
+  current_net_cents: number;
+  series: { date: string; net_cents: number }[];
+};
 
 function Card({
   title,
@@ -40,6 +48,10 @@ export default function DashboardPage() {
     queryKey: ["recent-transactions"],
     queryFn: () => api<TransactionsPageData>("/transactions?limit=6"),
   });
+  const { data: netWorth } = useQuery({
+    queryKey: ["net-worth"],
+    queryFn: () => api<NetWorth>("/net-worth/history"),
+  });
 
   const left = summary ? summary.total_budget_cents - summary.total_spent_cents : 0;
   const pct = summary?.total_budget_cents
@@ -60,6 +72,30 @@ export default function DashboardPage() {
 
   return (
     <div className="grid max-w-5xl grid-cols-1 gap-6 lg:grid-cols-2">
+      <Card
+        title="Net worth"
+        action={
+          <Link href="/accounts" className="text-xs text-neutral-500 hover:text-neutral-300">
+            Accounts →
+          </Link>
+        }
+      >
+        <div className="mb-1 text-3xl font-semibold tabular-nums">
+          {formatCents(netWorth?.current_net_cents ?? 0, { whole: true })}
+        </div>
+        <div className="mb-3 flex gap-4 text-xs">
+          <span className="text-neutral-500">
+            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-green-500" />
+            Assets {formatCents(netWorth?.current_assets_cents ?? 0, { whole: true })}
+          </span>
+          <span className="text-neutral-500">
+            <span className="mr-1 inline-block h-2 w-2 rounded-full bg-orange-500" />
+            Debt {formatCents(netWorth?.current_liabilities_cents ?? 0, { whole: true })}
+          </span>
+        </div>
+        <Sparkline values={netWorth?.series.map((p) => p.net_cents) ?? []} />
+      </Card>
+
       <Card
         title="Monthly spending"
         action={

@@ -1,7 +1,8 @@
 import uuid
+from datetime import date as date_type
 from datetime import datetime
 
-from sqlalchemy import BigInteger, ForeignKey, Text
+from sqlalchemy import BigInteger, Date, ForeignKey, Text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -41,6 +42,10 @@ class Account(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     credit_limit_cents: Mapped[int | None] = mapped_column(BigInteger)
     balance_as_of: Mapped[datetime | None]
     is_hidden: Mapped[bool] = mapped_column(default=False, server_default="false")
+    # Liabilities (credit/loan accounts), refreshed by the daily job.
+    apr_percentage: Mapped[float | None]
+    next_payment_due_date: Mapped[date_type | None] = mapped_column(Date)
+    minimum_payment_cents: Mapped[int | None] = mapped_column(BigInteger)
 
     item: Mapped[PlaidItem] = relationship(back_populates="accounts")
 

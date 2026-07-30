@@ -8,10 +8,11 @@ import { api } from "@/lib/api";
 
 type Props = {
   itemId?: string; // set for update-mode reconnects
+  kind?: "bank" | "investment"; // brokerages need a different Plaid product set
   label?: string;
 };
 
-export function PlaidLinkButton({ itemId, label = "Add account" }: Props) {
+export function PlaidLinkButton({ itemId, kind = "bank", label = "Add account" }: Props) {
   const queryClient = useQueryClient();
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,7 +53,7 @@ export function PlaidLinkButton({ itemId, label = "Add account" }: Props) {
         try {
           const { link_token } = await api<{ link_token: string }>("/plaid/link_token", {
             method: "POST",
-            body: JSON.stringify({ item_id: itemId ?? null }),
+            body: JSON.stringify({ item_id: itemId ?? null, kind }),
           });
           // OAuth banks redirect the whole page; /plaid-oauth resumes Link
           // with this token after the bank sends the user back.

@@ -28,7 +28,9 @@ async def link_token(
         if not item:
             raise HTTPException(404, "Unknown item")
         access_token = item.access_token
-    return LinkTokenResponse(link_token=plaid_items.create_link_token(access_token))
+    return LinkTokenResponse(
+        link_token=plaid_items.create_link_token(access_token, kind=body.kind)
+    )
 
 
 @router.post("/exchange")

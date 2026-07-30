@@ -12,6 +12,8 @@ from sqlalchemy import select
 
 from app.db import async_session_factory
 from app.models import PlaidItem
+from app.services.investments import sync_holdings, sync_liabilities
+from app.services.net_worth import write_snapshots
 from app.services.plaid_items import sync_accounts
 from app.services.sync import sync_item
 
@@ -38,8 +40,11 @@ async def daily_maintenance() -> None:
         for item in items:
             try:
                 await sync_accounts(session, item)
+                await sync_holdings(session, item)
+                await sync_liabilities(session, item)
             except Exception:
-                logger.exception("Balance refresh failed for item %s", item.id)
+                logger.exception("Balance/holdings refresh failed for item %s", item.id)
+        await write_snapshots(session)
         await session.commit()
 
     # Webhook fallback: catch anything a dropped webhook missed.
@@ -50,8 +55,17 @@ async def daily_maintenance() -> None:
             logger.exception("Fallback sync failed for item %s", item_id)
 
 
+async def snapshot_on_startup() -> None:
+    """Net worth history only exists from the first snapshot — take one at
+    boot so a fresh deploy doesn't wait for the 06:00 job."""
+    async with async_session_factory() as session:
+        await write_snapshots(session)
+        await session.commit()
+
+
 def start_scheduler() -> None:
     scheduler.add_job(daily_maintenance, "cron", hour=6, minute=0, id="daily_maintenance")
+    scheduler.add_job(snapshot_on_startup, id="snapshot_on_startup")
     scheduler.start()
 
 

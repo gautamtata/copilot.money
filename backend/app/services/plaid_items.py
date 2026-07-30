@@ -18,7 +18,7 @@ CLIENT_NAME = "copilot.money"
 CLIENT_USER_ID = "owner"
 
 
-def create_link_token(access_token: str | None = None) -> str:
+def create_link_token(access_token: str | None = None, kind: str = "bank") -> str:
     settings = get_settings()
     kwargs: dict = {
         "client_name": CLIENT_NAME,
@@ -29,8 +29,16 @@ def create_link_token(access_token: str | None = None) -> str:
     if access_token:
         # Update mode: reconnect an existing item; products must not be sent.
         kwargs["access_token"] = access_token
+    elif kind == "investment":
+        # Brokerages like Robinhood support only the investments product;
+        # requiring transactions would hide them in Link.
+        kwargs["products"] = [Products("investments")]
     else:
         kwargs["products"] = [Products("transactions")]
+        kwargs["required_if_supported_products"] = [
+            Products("investments"),
+            Products("liabilities"),
+        ]
     if settings.plaid_webhook_url:
         kwargs["webhook"] = settings.plaid_webhook_url
     if settings.plaid_redirect_uri:

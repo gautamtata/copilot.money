@@ -38,6 +38,23 @@ export interface paths {
         patch: operations["patch_account_api_backend_accounts__account_id__patch"];
         trace?: never;
     };
+    "/api/backend/accounts/{account_id}/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Account History */
+        get: operations["get_account_history_api_backend_accounts__account_id__history_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/backend/budgets": {
         parameters: {
             query?: never;
@@ -169,6 +186,40 @@ export interface paths {
         };
         /** Health */
         get: operations["health_api_backend_health_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backend/investments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Investments */
+        get: operations["get_investments_api_backend_investments_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/backend/net-worth/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Net Worth History */
+        get: operations["get_net_worth_history_api_backend_net_worth_history_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -317,6 +368,16 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AccountHistoryPoint */
+        AccountHistoryPoint: {
+            /** Current Balance Cents */
+            current_balance_cents: number | null;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+        };
         /** AccountOut */
         AccountOut: {
             /** Available Balance Cents */
@@ -358,6 +419,15 @@ export interface components {
         AccountsResponse: {
             /** Accounts */
             accounts: components["schemas"]["AccountOut"][];
+        };
+        /** AllocationSlice */
+        AllocationSlice: {
+            /** Label */
+            label: string;
+            /** Percent */
+            percent: number;
+            /** Value Cents */
+            value_cents: number;
         };
         /** BudgetCategorySummary */
         BudgetCategorySummary: {
@@ -483,15 +553,85 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** HoldingOut */
+        HoldingOut: {
+            /**
+             * Account Id
+             * Format: uuid
+             */
+            account_id: string;
+            /** Account Name */
+            account_name: string;
+            /** As Of */
+            as_of: string | null;
+            /** Close Price */
+            close_price: number | null;
+            /** Cost Basis Cents */
+            cost_basis_cents: number | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Quantity */
+            quantity: number;
+            /** Security Name */
+            security_name: string | null;
+            /** Security Type */
+            security_type: string | null;
+            /** Ticker */
+            ticker: string | null;
+            /** Value Cents */
+            value_cents: number | null;
+        };
+        /** InvestmentsResponse */
+        InvestmentsResponse: {
+            /** Allocation */
+            allocation: components["schemas"]["AllocationSlice"][];
+            /** Holdings */
+            holdings: components["schemas"]["HoldingOut"][];
+            /** Total Value Cents */
+            total_value_cents: number;
+        };
         /** LinkTokenRequest */
         LinkTokenRequest: {
             /** Item Id */
             item_id?: string | null;
+            /**
+             * Kind
+             * @default bank
+             */
+            kind: string;
         };
         /** LinkTokenResponse */
         LinkTokenResponse: {
             /** Link Token */
             link_token: string;
+        };
+        /** NetWorthPoint */
+        NetWorthPoint: {
+            /** Assets Cents */
+            assets_cents: number;
+            /**
+             * Date
+             * Format: date
+             */
+            date: string;
+            /** Liabilities Cents */
+            liabilities_cents: number;
+            /** Net Cents */
+            net_cents: number;
+        };
+        /** NetWorthResponse */
+        NetWorthResponse: {
+            /** Current Assets Cents */
+            current_assets_cents: number;
+            /** Current Liabilities Cents */
+            current_liabilities_cents: number;
+            /** Current Net Cents */
+            current_net_cents: number;
+            /** Series */
+            series: components["schemas"]["NetWorthPoint"][];
         };
         /** PlaidItemOut */
         PlaidItemOut: {
@@ -695,6 +835,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AccountOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_account_history_api_backend_accounts__account_id__history_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: {
+                authorization?: string;
+            };
+            path: {
+                account_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountHistoryPoint"][];
                 };
             };
             /** @description Validation Error */
@@ -1060,6 +1235,70 @@ export interface operations {
                     "application/json": {
                         [key: string]: string;
                     };
+                };
+            };
+        };
+    };
+    get_investments_api_backend_investments_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvestmentsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_net_worth_history_api_backend_net_worth_history_get: {
+        parameters: {
+            query?: {
+                days?: number;
+            };
+            header?: {
+                authorization?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NetWorthResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

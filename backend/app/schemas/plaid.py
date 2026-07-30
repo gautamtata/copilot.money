@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 class LinkTokenRequest(BaseModel):
     item_id: uuid.UUID | None = None
+    kind: str = "bank"  # bank | investment
 
 
 class LinkTokenResponse(BaseModel):

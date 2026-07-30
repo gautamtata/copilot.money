@@ -3,7 +3,15 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, Depends, FastAPI
 
 from app.auth import require_api_token
-from app.routers import accounts, budgets, categories, plaid, transactions, webhooks
+from app.routers import (
+    accounts,
+    budgets,
+    categories,
+    investments,
+    plaid,
+    transactions,
+    webhooks,
+)
 from app.scheduler import start_scheduler, stop_scheduler
 
 
@@ -34,6 +42,7 @@ api.include_router(accounts.router)
 api.include_router(transactions.router)
 api.include_router(categories.router)
 api.include_router(budgets.router)
+api.include_router(investments.router)
 
 app.include_router(public)
 app.include_router(api)

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 import { PlaidLinkButton } from "@/components/PlaidLinkButton";
 import { api } from "@/lib/api";
@@ -69,15 +70,18 @@ export default function AccountsPage() {
           <div className="divide-y divide-neutral-800 rounded-xl border border-neutral-800 bg-neutral-900">
             {accounts.map((account) => (
               <div key={account.id} className="flex items-center justify-between px-4 py-3">
-                <div className={account.is_hidden ? "opacity-40" : ""}>
-                  <div className="text-sm font-medium">
+                <Link
+                  href={`/accounts/${account.id}`}
+                  className={account.is_hidden ? "opacity-40" : ""}
+                >
+                  <div className="text-sm font-medium hover:underline">
                     {account.name}
                     {account.mask && (
                       <span className="ml-2 text-xs text-neutral-500">••{account.mask}</span>
                     )}
                   </div>
                   <div className="text-xs text-neutral-500">{account.institution_name}</div>
-                </div>
+                </Link>
                 <div className="flex items-center gap-4">
                   <span className={`text-sm tabular-nums ${account.is_hidden ? "opacity-40" : ""}`}>
                     {account.current_balance_cents != null
