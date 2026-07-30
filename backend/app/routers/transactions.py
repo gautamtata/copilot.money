@@ -60,6 +60,7 @@ async def list_transactions(
     search: str | None = None,
     start_date: date_type | None = None,
     end_date: date_type | None = None,
+    excluded: bool | None = None,
     session: AsyncSession = Depends(get_session),
 ) -> TransactionsPage:
     query = (
@@ -85,6 +86,8 @@ async def list_transactions(
         query = query.where(Transaction.date >= start_date)
     if end_date:
         query = query.where(Transaction.date <= end_date)
+    if excluded is not None:
+        query = query.where(Transaction.excluded.is_(excluded))
 
     rows = (await session.execute(query)).scalars().all()
     has_more = len(rows) > limit

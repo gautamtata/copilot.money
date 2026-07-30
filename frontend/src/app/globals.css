@@ -25,6 +25,7 @@
   /* Money semantics */
   --color-pos: #1e7a4f; /* inflows, under budget */
   --color-neg: #a63a2c; /* debt, over budget */
+  --color-warn: #a9761c; /* approaching a limit (e.g. credit utilization) */
 
   /* Validated categorical chart palette (fixed order, never cycled) */
   --color-cat-1: #24845a;

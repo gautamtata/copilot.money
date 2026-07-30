@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Card } from "@/components/Card";
 import { Guilloche } from "@/components/Guilloche";
@@ -9,14 +10,8 @@ import { NetWorthChart } from "@/components/charts/NetWorthChart";
 import { api } from "@/lib/api";
 import type { BudgetSummary, CashflowMonth, TransactionsPageData } from "@/lib/budget-types";
 import { categoryColor } from "@/lib/colors";
+import type { NetWorth } from "@/lib/finance-types";
 import { formatCents } from "@/lib/format";
-
-type NetWorth = {
-  current_assets_cents: number;
-  current_liabilities_cents: number;
-  current_net_cents: number;
-  series: { date: string; net_cents: number }[];
-};
 
 type Recurring = {
   id: string;
@@ -42,7 +37,7 @@ function UpcomingCharges() {
     queryFn: () => api<{ recurrings: Recurring[] }>("/recurrings"),
   });
 
-  const horizon = new Date(Date.now() + 14 * 24 * 3600 * 1000);
+  const [horizon] = useState(() => new Date(Date.now() + 14 * 24 * 3600 * 1000));
   const upcoming = (data?.recurrings ?? [])
     .filter(
       (r) =>
@@ -106,6 +101,12 @@ export default function DashboardPage() {
     .sort((a, b) => b.spent_cents - a.spent_cents)
     .slice(0, 6);
   const maxSpent = topCategories[0]?.spent_cents ?? 1;
+  const summaryMonth = summary?.month;
+  const monthEnd = summaryMonth
+    ? `${summaryMonth.slice(0, 7)}-${String(
+        new Date(Number(summaryMonth.slice(0, 4)), Number(summaryMonth.slice(5, 7)), 0).getDate(),
+      ).padStart(2, "0")}`
+    : undefined;
 
   const thisMonth = cashflow?.at(-1);
   const lastMonth = cashflow?.at(-2);
@@ -203,9 +204,22 @@ export default function DashboardPage() {
           )}
           <div className="flex flex-col gap-3">
             {topCategories.map(({ category, spent_cents, budget_cents }) => (
-              <div key={category.id}>
+              <Link
+                key={category.id}
+                href={{
+                  pathname: "/transactions",
+                  query: {
+                    category_id: category.id,
+                    start_date: summaryMonth,
+                    end_date: monthEnd,
+                    excluded: "false",
+                  },
+                }}
+                aria-label={`View ${category.name} transactions for this month`}
+                className="group -mx-2 rounded-lg px-2 py-1 transition-colors hover:bg-moss focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pine"
+              >
                 <div className="mb-1 flex items-center justify-between text-sm">
-                  <span>
+                  <span className="transition-colors group-hover:text-pine-deep">
                     {category.emoji} {category.name}
                   </span>
                   <span className="tabular-nums text-ink-2">
@@ -227,7 +241,7 @@ export default function DashboardPage() {
                     }}
                   />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </Card>

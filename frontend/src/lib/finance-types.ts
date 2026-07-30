@@ -1,3 +1,37 @@
+export type Account = {
+  id: string;
+  name: string;
+  official_name: string | null;
+  mask: string | null;
+  type: string;
+  subtype: string | null;
+  currency: string;
+  current_balance_cents: number | null;
+  available_balance_cents: number | null;
+  credit_limit_cents: number | null;
+  balance_as_of: string | null;
+  is_hidden: boolean;
+  institution_name: string | null;
+};
+
+export type AccountsResponse = {
+  accounts: Account[];
+};
+
+export type NetWorthPoint = {
+  date: string;
+  assets_cents: number;
+  liabilities_cents: number;
+  net_cents: number;
+};
+
+export type NetWorth = {
+  current_assets_cents: number;
+  current_liabilities_cents: number;
+  current_net_cents: number;
+  series: NetWorthPoint[];
+};
+
 export type Category = {
   id: string;
   name: string;

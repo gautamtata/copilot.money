@@ -15,7 +15,7 @@ print. Every visual decision should be defensible in those terms.
 - Surfaces: `bg-paper` (green-tinted app bg), `bg-card` (white cards), `bg-moss` (tinted fills/hovers), borders `border-line` / `border-line-strong`
 - Ink: `text-ink` (primary), `text-ink-2` (secondary), `text-ink-3` (muted)
 - Brand: `pine` (#175a43, primary actions/lines), `pine-deep` (hover, display headings)
-- Money semantics: `pos` (inflows/under budget) and `neg` (debt/over budget) — reserved, never decorative
+- Money semantics: `pos` (inflows/under budget), `neg` (debt/over budget), `warn` (approaching a limit, e.g. mid credit utilization) — reserved, never decorative
 - Charts: `cat-1..cat-6` — a CVD-validated categorical palette in **fixed order**; a category's color = `categoryColor(sort_order)` from `src/lib/colors.ts`. Never cycle colors by data order; color follows the entity.
 
 ## Type (three faces, three jobs)
